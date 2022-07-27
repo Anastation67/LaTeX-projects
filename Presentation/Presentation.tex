@@ -1,0 +1,175 @@
+\documentclass[10pt,presentation,shownotes]{beamer}
+\usetheme{Warsaw}
+\usecolortheme{crane}
+\usepackage{beamerthemesplit}
+\usefonttheme{default}
+\setbeamertemplate{caption}[numbered]
+\setbeamercolor{block body example}{bg=green!12}
+\setbeamertemplate{theorems}[numbered]
+
+% Refer to these super useful links for beamer tips and tricks
+%
+% http://tug.ctan.org/macros/latex/contrib/beamer/doc/beameruserguide.pdf
+% https://www.overleaf.com/learn/latex/Beamer
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage{mathtools,amsfonts,amssymb,tikz-cd,hyperref,caption,pstricks,setspace,booktabs,hyperref}
+\usepackage{appendixnumberbeamer}
+
+% Customize hyperlink colours
+\usepackage{xcolor}
+\hypersetup{
+	colorlinks,
+	linkcolor={blue!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
+% We use BiBLaTeX for our bibliography.
+\usepackage[backend=biber,style=alphabetic]{biblatex}
+\renewcommand*{\nameyeardelim}{\addcomma\addspace}
+
+\addbibresource{References/ref.bib}
+
+% The lipsum package called in the next line is just for generating dummy text and is not necessary.
+\usepackage{lipsum}
+
+% Note: Changes to specific presentation elements usually start with /makeatletter and ends with /makeatother
+
+\makeatletter
+\def\th@remark{%
+    \normalfont % body font
+    \setbeamercolor{block title example}{bg=orange,fg=black}
+    \setbeamercolor{block body example}{bg=orange!20,fg=black}
+    \def\inserttheoremblockenv{exampleblock}
+  }
+\makeatother
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\setbeamertemplate{headline}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1ex,left,leftskip=1em]{section in head/foot}%
+    \usebeamerfont{subsection in head/foot}\hspace*{2ex}\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1ex,center]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2ex}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\makeatletter
+\setbeamertemplate{footline}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor~~\beamer@ifempty{\insertshortinstitute}{}{(\insertshortinstitute)}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.25ex,dp=1ex,center]{subsection in head/foot}%
+    \usebeamerfont{section in head/foot}\hspace*{1ex}\insertsectionhead\hspace*{1ex}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,right, rightskip=1em]{section in head/foot}%
+    \usebeamerfont{section in head/foot}\insertsubsectionhead\hspace*{2ex}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+\makeatother
+
+\makeatletter
+\setbeamertemplate{frametitle}{
+    \ifbeamercolorempty[bg]{frametitle}{}{\nointerlineskip}%
+    \@tempdima=\textwidth%
+    \advance\@tempdima by\beamer@leftmargin%
+    \advance\@tempdima by\beamer@rightmargin%
+    \begin{beamercolorbox}[sep=0.3cm,center,wd=\the\@tempdima]{frametitle}
+        \usebeamerfont{frametitle}%
+        \vbox{}\vskip-1ex%
+        \if@tempswa\else\csname beamer@ftecenter\endcsname\fi%
+        \strut\insertframetitle\strut\par%
+        {%
+            \ifx\insertframesubtitle\@empty%
+            \else%
+            {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle\strut\par}%
+            \fi
+        }%
+        \vskip-1ex%
+        \if@tempswa\else\vskip-.3cm\fi% set inside beamercolorbox... evil here...
+    \end{beamercolorbox}%
+}
+\makeatother
+
+% This code displays an updating ToC at the beginning of every section.
+\AtBeginSection[]
+{
+	\begin{frame}
+	\frametitle{Table of Contents}
+	\tableofcontents[currentsection]
+	\end{frame}
+}
+
+\makeatletter
+\newcommand<>{\insertsubsectiontitle}{\frametitle{\insertsubsection}}
+\let\oldbeamer@checkframetitle\beamer@checkframetitle% Store the \frametitle checking mechanism
+\renewcommand<>{\subsection}{%
+  \gdef\beamer@checkframetitle{% Update \frametitle checking to ...
+    \insertsubsectiontitle% ...insert the section title and...
+    \global\let\beamer@checkframetitle\oldbeamer@checkframetitle% ...revert to it's old definition
+  }% Regular \section stuff follows
+  \alt#1{\@ifnextchar[\beamer@subsection\beamer@@subsection}
+    {\beamer@secgobble}}
+\makeatother
+
+\makeatletter
+\newenvironment<>{proofs}[1][\proofname]{%
+    \par
+    \def\insertproofname{#1\@addpunct{.}}%
+    \usebeamertemplate{proof begin}#2}
+  {\usebeamertemplate{proof end}}
+\makeatother
+
+% Uncomment for some standard notations in math (Real, Complex and Rational numbers, Norm, Jacobian, etc) 
+% \newcommand{\reals}{\mathbb{R}}
+% \newcommand{\mtrx}{\mathbb{M}}
+% \newcommand{\jacobian}{\mathcal{J}}
+% \newcommand{\tallstrut}{\vphantom{\frac{5_A}{4,10^3}}}
+% \newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+% \newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+
+% FILL IN FOR PLACEHOLDER TEXT
+% Extended input for Title Page, Abridged Input for Header and Footer
+\title[\color{white} Short Title
+\hspace{0.3cm}\insertframenumber/\inserttotalframenumber]{“Sentiment Analysis based on Glamping Reviews from TripAdvisors: Developing a Decision-Making Assistant”}
+\author[Name]{Anastasiia Prokhorova}
+\institute[So\_, IISER TVM]{NATIONAL RESEARCH UNIVERSITY HIGHER SCHOOL OF ECONOMICS}
+\date[Short Presentation Details]{28.05.2022}
+\titlegraphic{\includegraphics[height=35pt]{Logos and Figures/HSE_University_blue.jpg.(230x86x123).jpg}}
+
+\begin{document}
+\setlength{\belowcaptionskip}{10pt plus 2pt minus 4pt}
+	
+	\begin{frame}[plain]
+		\maketitle
+	\end{frame}
+	
+\input{Chapters/1_Introduction}
+\input{Chapters/2_Instruments}
+\input{Chapters/3_Intermediate_results}
+\input{Chapters/4_Final_results}
+\input{Chapters/5_Further_developement}
+\input{Chapters/6_Appendix}
+
+\begin{frame}[allowframebreaks]
+	\frametitle{References}
+	\nocite{*}
+	\printbibliography
+\end{frame}
+
+\end{document}
